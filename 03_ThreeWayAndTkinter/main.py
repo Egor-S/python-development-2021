@@ -18,7 +18,6 @@ class FifteenGame(tk.Frame):
         ]
         self.create_widgets()
 
-
     def create_widgets(self):
         self.new_button = tk.Button(self, text='New', command=self.new_game)
         self.new_button.grid(row=0, column=0, columnspan=2)
@@ -94,13 +93,11 @@ class FifteenGame(tk.Frame):
         self.grid_numeric_buttons()
 
 
-
 def main():
     game = FifteenGame()
     game.master.title("15")
     game.master.geometry("300x300")
     game.mainloop()
-
 
 
 if __name__ == '__main__':
