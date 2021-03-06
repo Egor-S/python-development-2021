@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 
 
 tk_NESW = tk.N + tk.E + tk.S + tk.W
@@ -48,6 +49,8 @@ class FifteenGame(tk.Frame):
                 t_pos = self.test_move(pos)
                 self.map[pos], self.map[t_pos] = self.map[t_pos], self.map[pos]  # swap numbers
                 self.numeric_buttons[n].grid(row=t_pos // 4 + 1, column=t_pos % 4, sticky=tk_NESW)
+                if self.test_win():
+                    messagebox.showinfo('You win', 'You are breathtaking player!')
             except IndexError as e:
                 pass
         return callback
@@ -63,6 +66,12 @@ class FifteenGame(tk.Frame):
         if y < 3 and self.map[pos + 4] is None:
             return pos + 4
         raise IndexError("No possible moves")
+
+    def test_win(self):
+        for i, n in enumerate(self.map[:-1]):
+            if i != n:
+                return False
+        return True
 
 
 
