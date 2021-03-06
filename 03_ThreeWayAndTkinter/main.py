@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 from tkinter import messagebox
 
@@ -19,7 +20,7 @@ class FifteenGame(tk.Frame):
 
 
     def create_widgets(self):
-        self.new_button = tk.Button(self, text='New')
+        self.new_button = tk.Button(self, text='New', command=self.new_game)
         self.new_button.grid(row=0, column=0, columnspan=2)
         self.quit_button = tk.Button(self, text='Exit', command=self.quit)
         self.quit_button.grid(row=0, column=2, columnspan=2)
@@ -51,6 +52,7 @@ class FifteenGame(tk.Frame):
                 self.numeric_buttons[n].grid(row=t_pos // 4 + 1, column=t_pos % 4, sticky=tk_NESW)
                 if self.test_win():
                     messagebox.showinfo('You win', 'You are breathtaking player!')
+                    self.new_game()
             except IndexError as e:
                 pass
         return callback
@@ -72,6 +74,10 @@ class FifteenGame(tk.Frame):
             if i != n:
                 return False
         return True
+
+    def new_game(self):
+        random.shuffle(self.map)
+        self.grid_numeric_buttons()
 
 
 
