@@ -76,7 +76,21 @@ class FifteenGame(tk.Frame):
         return True
 
     def new_game(self):
-        random.shuffle(self.map)
+        self.map = [i for i in range(15)] + [None]
+        for _ in range(100):
+            pos = self.map.index(None)
+            x, y = pos % 4, pos // 4
+            variants = []
+            if x > 0:
+                variants.append(pos - 1)
+            if x < 3:
+                variants.append(pos + 1)
+            if y > 0:
+                variants.append(pos - 4)
+            if y < 3:
+                variants.append(pos + 4)
+            t_pos = random.choice(variants)
+            self.map[pos], self.map[t_pos] = self.map[t_pos], self.map[pos]  # swap numbers
         self.grid_numeric_buttons()
 
 
