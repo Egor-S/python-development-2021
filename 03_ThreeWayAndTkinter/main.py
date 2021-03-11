@@ -35,7 +35,8 @@ class FifteenGame(tk.Frame):
         top.columnconfigure(0, weight=1)
         for i in range(4):
             self.rowconfigure(i + 1, weight=1)
-            self.columnconfigure(i, weight=1)
+            # fixed width hack via `uniform` from https://stackoverflow.com/questions/21002617
+            self.columnconfigure(i, weight=1, uniform="num")
 
     def grid_numeric_buttons(self):
         for i, n in enumerate(self.map):
