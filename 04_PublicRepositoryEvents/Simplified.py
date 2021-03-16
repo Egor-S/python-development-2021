@@ -24,7 +24,6 @@ def widget_constructor(attr, master):
 
             def __getattr__(self, attr2):
                 return widget_constructor(attr2, self)
-        print('create widget', attr)
         setattr(master, attr, VirtualWidget())
     return wrapper
 
@@ -40,7 +39,6 @@ class Application(tk.Frame):
         self.createWidgets()
 
     def __getattr__(self, attr):
-        print('query', attr)
         return widget_constructor(attr, self)
         
 
