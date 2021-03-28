@@ -40,13 +40,15 @@ class GraphEdit(Application):
         self.edit_frame.grid(row=0, column=0, sticky='NEWS')
         self.T = tk.Text(self.edit_frame, undo=True, wrap=tk.WORD, font='fixed', inactiveselectbackground="MidnightBlue")
         self.T.grid(row=0, column=0, sticky='NEWS')
+        self.T.bind('<KeyRelease>', lambda e: self.text_to_figures())
+        self.T.tag_config('error', background='red', foreground='#ffffff')
         
-        self.file_controls = tk.Frame(self)
-        self.file_controls.grid(row=1, column=0, sticky='NEWS')
-        self.load = tk.Button(self.file_controls, text='Load')  # todo command
-        self.load.grid(row=0, column=0)
-        self.save = tk.Button(self.file_controls, text='Save')  # todo command
-        self.save.grid(row=0, column=1)
+        # self.file_controls = tk.Frame(self)
+        # self.file_controls.grid(row=1, column=0, sticky='NEWS')
+        # self.load = tk.Button(self.file_controls, text='Load')  # todo command
+        # self.load.grid(row=0, column=0)
+        # self.save = tk.Button(self.file_controls, text='Save')  # todo command
+        # self.save.grid(row=0, column=1)
 
         self.canvas_frame = tk.Frame(self)
         self.canvas_frame.grid(row=0, column=1, sticky='NEWS')
@@ -71,9 +73,9 @@ class GraphEdit(Application):
         self.C.bind('<ButtonRelease>', self.canvas_on_mouse_release)
         
         self.quit_controls = tk.Frame(self)
-        self.quit_controls.grid(row=1, column=1, sticky='NEWS')
+        self.quit_controls.grid(row=1, column=0, sticky='NEWS')
         self.quit = tk.Button(self.quit_controls, text='Quit', command=self.master.quit)
-        self.quit.grid(sticky='E')
+        self.quit.grid()
 
     def configure_widgets(self):
         for i in range(2):
@@ -130,6 +132,40 @@ class GraphEdit(Application):
         self.mode = None
         self.active_figure = None
         self.start_point = None
+        self.figures_to_text()
+
+    def figures_to_text(self):
+        text = ""
+        for i in self.figures:
+            t = self.C.type(i)
+            p = ' '.join(str(c) for c in self.C.coords(i))
+            w = self.C.itemcget(i, 'width')
+            o = self.C.itemcget(i, 'outline')
+            f = self.C.itemcget(i, 'fill')
+            text += f"{t} {p} {w} {o} {f}\n"
+        self.T.delete('1.0', tk.END)
+        self.T.insert('1.0', text)
+
+    def text_to_figures(self):
+        self.T.tag_remove('error', '1.0', tk.END)
+        text = self.T.get('1.0', tk.END)
+        for i in self.figures:
+            self.C.delete(i)
+        self.figures = []
+
+        for row, line in enumerate(text.split('\n'), start=1):
+            if not line or line.startswith('#'):
+                continue
+            try:
+                t, x0, y0, x1, y1, w, o, f = line.split()
+                x0, y0, x1, y1, w = [float(i) for i in (x0, y0, x1, y1, w)]
+                i = eval(f"self.C.create_{t}({x0}, {y0}, {x1}, {y1}, width={w}, outline='{o}', fill='{f}')")
+                self.C.tag_bind(i, '<Button>', self.figure_on_mouse_press)
+                self.figures.append(i)
+            except Exception as e:
+                self.T.tag_add('error', f'{row}.0', f'{row}.end')
+                print(f"row {row}: {e}")
+                continue
 
 
 def main():
